@@ -44,6 +44,9 @@
 	}{}	
 	\ifthenelse{\equal{\geometrieDesigne}{2}}{
 		\doubleLineGeometrie{#1}{#2}{#3}{#4}
+	}{}
+	\ifthenelse{\equal{\geometrieDesigne}{3}}{
+		% No design geometrie
 	}{}	
 }
 
@@ -79,6 +82,8 @@
 			--
 			++(\lowerLineEndX, 0);
 }
+
+
 
 \newcommand{\drawHeader}{
 	\FPeval{\headerBoxY}{\intcalcDiv{24}{\columns} * (boxHeight + padding)}
