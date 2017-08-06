@@ -1,0 +1,161 @@
+\documentclass{standalone}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{forloop}
+\usepackage{intcalc}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\usepackage{fp}
+\usepackage{algorithmic}
+
+
+\definecolor{schnaubelt-blue}{HTML}{001473}
+
+\newcommand{\columns}				{6}
+\newcommand{\strokeWidth}			{0.04cm}
+\newcommand{\geometrieDesigne}		{2}
+
+\newcommand{\drawColor}				{black}
+\newcommand{\colorHeaderText}		{black}
+\newcommand{\colorCapitalLetter}	{black}
+\newcommand{\colorLowerLetter}		{black}
+\newcommand{\colorDiscription}		{schnaubelt-blue}
+
+\newcommand{\headerFontSize}		{20pt}
+\newcommand{\capitalFontSize}		{24pt}
+\newcommand{\lowerFontSize}			{24pt}
+\newcommand{\discriptionFontSize}	{10pt}
+
+\newcommand{\headerHeight}			{1.2}
+\newcommand{\boxWidth}				{3}
+\newcommand{\boxHeight}				{2}
+\newcommand{\padding}				{0.1}
+\newcommand{\textMarginTop}			{1}
+\newcommand{\textMarginBottom}		{0.2}
+\newcommand{\letterSpace}			{0.2}
+\newcommand{\spacesBetweenLetters}	{3}
+\newcommand{\myLetterMid}			{0.4}
+
+
+% x,y of the lower left corner; width and height of the box
+\newcommand{\drawGeometrie}[4]{
+	\ifthenelse{\equal{\geometrieDesigne}{1}}{
+		\basicBoxGeometrie{#1}{#2}{#3}{#4}
+	}{}	
+	\ifthenelse{\equal{\geometrieDesigne}{2}}{
+		\doubleLineGeometrie{#1}{#2}{#3}{#4}
+	}{}	
+}
+
+\newcommand{\basicBoxGeometrie}[4]{
+	\draw 	[\drawColor, line width=\strokeWidth]
+			(#1, #2)
+			rectangle
+			++(#3, #4);
+}
+
+\newcommand{\doubleLineGeometrie}[4]{
+	\def \myLineSpacing{0.07}
+	\def \doubleLineStrokeWidth{0.01cm}
+	\def \shortenUpperLineBy{0.5}
+	\def \shortenLowerLineBy{1.5}
+		
+	\FPeval{\upperLineY}{#2 + myLineSpacing * 0.5}
+	\FPeval{\lowerLineY}{#2 - myLineSpacing * 0.5}
+
+	\FPeval{\upperLineShorter}{shortenUpperLineBy * 0.5}
+	\FPeval{\upperLineEndX}{#3 - shortenUpperLineBy}	
+	
+	\FPeval{\lowerLineShorter}{shortenLowerLineBy * 0.5}
+	\FPeval{\lowerLineEndX}{#3 - shortenLowerLineBy}
+	
+	\draw 	[\drawColor, line width=\doubleLineStrokeWidth]
+			(#1 + \upperLineShorter, \upperLineY) 
+			--
+			++(\upperLineEndX, 0);
+			
+	\draw 	[\drawColor, line width=\doubleLineStrokeWidth]
+			(#1 + \lowerLineShorter, \lowerLineY) 
+			--
+			++(\lowerLineEndX, 0);
+}
+
+\newcommand{\drawHeader}{
+	\FPeval{\headerBoxY}{\intcalcDiv{24}{\columns} * (boxHeight + padding)}
+	\FPeval{\headerWidth}{columns * (boxWidth + padding) - padding}
+	
+	\drawGeometrie{0}{\headerBoxY}{\headerWidth}{\headerHeight}
+	
+	\FPeval{\headerTextX}{headerWidth * 0.5}
+	\FPeval{\headerTextY}{headerBoxY + headerHeight * 0.5}	
+	\node	[text=\colorHeaderText]
+			at (\headerTextX, \headerTextY)
+			{\fontsize{\headerFontSize}{12pt} \textbf{$To$ $E\lambda\lambda\eta\nu\iota\kappa o$ $A\lambda\varphi\alpha\beta\eta\tau o$}};
+
+}
+
+\newcommand{\drawLetter}[5]{	
+	\FPeval{\x}{\intcalcMod{#1}{\columns} * (boxWidth + padding)}
+	\FPeval{\y}{\intcalcDiv{#1}{\columns} * (boxHeight + padding)}
+	
+	\drawGeometrie{\x}{\y}{\boxWidth}{\boxHeight}	
+	
+	\FPeval{\charY}{y + boxHeight - textMarginTop}	
+	% Checkt ob der optinale dritte Buchstabe leer ist	
+	\ifthenelse{\equal{#4}{}}{
+		\FPeval{\lowerX}{x + boxWidth * 0.5 + letterSpace * 0.5}
+		\FPeval{\capitalX}{x + boxWidth * 0.5 - letterSpace * 0.5}
+	} % else
+	{
+		\FPeval{\lowerX}{x + boxWidth * myLetterMid + letterSpace * 0.5}
+		\FPeval{\capitalX}{x + boxWidth * myLetterMid - letterSpace * 0.5}
+	} % fi	
+	
+	\node	[anchor = base east, inner sep=0pt, text=\colorCapitalLetter]
+			at (\capitalX, \charY)
+			{\fontsize{\capitalFontSize}{12pt} \textbf{$\strut#2$}};	
+	
+	\node	[anchor= base west, inner sep=0pt, text=\colorLowerLetter]
+			at (\lowerX, \charY)
+			{\fontsize{\lowerFontSize}{12pt} \textbf{$\strut#3 \, #4$}};
+			
+				
+	\FPeval{\discriptionX}{x + boxWidth * 0.5}
+	\FPeval{\discriptionY}{y + textMarginBottom}
+	\node	[anchor = base, text=\colorDiscription]
+			at (\discriptionX, \discriptionY)
+			{\fontsize{\discriptionFontSize}{12pt} #5};
+}
+
+
+\begin{document}
+	\begin{tikzpicture}		
+		\drawHeader
+	
+		\drawLetter{18}{A}{\alpha}{}{Alpha}
+		\drawLetter{19}{B}{\beta}{}{Beta}
+		\drawLetter{20}{\Gamma}{\gamma}{}{Gamma}
+		\drawLetter{21}{\Delta}{\delta}{}{Delta}
+		\drawLetter{22}{E}{\epsilon}{\varepsilon}{Epsilon}
+		\drawLetter{23}{Z}{\zeta}{}{Zeta}
+		\drawLetter{12}{H}{\eta}{}{Eta}
+		\drawLetter{13}{\Theta}{\theta}{\vartheta}{Theta}
+		\drawLetter{14}{I}{\iota}{}{Iota}
+		\drawLetter{15}{K}{\kappa}{}{Kappa}
+		\drawLetter{16}{\Lambda}{\lambda}{}{Lambda}
+		\drawLetter{17}{M}{\mu}{}{My}
+		\drawLetter{6}{N}{\nu}{}{Ny}
+		\drawLetter{7}{\Xi}{\xi}{}{Xi}
+		\drawLetter{8}{O}{o}{}{Omikron}
+		\drawLetter{9}{\Pi}{\pi}{\varpi}{Pi}
+		\drawLetter{10}{P}{\rho}{\varrho}{Rho}
+		\drawLetter{11}{\Sigma}{\sigma}{\varsigma}{Sigma}
+		\drawLetter{0}{T}{\tau}{}{Tau}
+		\drawLetter{1}{Y}{\upsilon}{}{Ypsilon}
+		\drawLetter{2}{\Phi}{\phi}{\varphi}{Phi}
+		\drawLetter{3}{X}{\chi}{}{Chi}
+		\drawLetter{4}{\Psi}{\psi}{}{Psi}
+		\drawLetter{5}{\Omega}{\omega}{}{Omega}		
+		
+	\end{tikzpicture}
+\end{document}
