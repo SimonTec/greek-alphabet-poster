@@ -11,10 +11,11 @@
 
 \newcommand{\columns}				{6}
 \newcommand{\strokeWidth}			{0.04cm}
-\newcommand{\geometrieDesigne}		{2}
+% box, doubleLine, none
+\newcommand{\geometrieDesigne}		{doubleLine}
 
-% classic, schnaubelt, dark
-\newcommand{\colorSchem}			{dark}
+% classic, schnaubelt, dark, darkRed
+\newcommand{\colorSchem}			{schnaubelt}
 
 \newcommand{\headerFontSize}		{24pt}
 \newcommand{\capitalFontSize}		{24pt}
@@ -70,13 +71,13 @@
 
 % x,y of the lower left corner; width and height of the box
 \newcommand{\drawGeometrie}[4]{	
-	\ifthenelse{\equal{\geometrieDesigne}{1}}{
+	\ifthenelse{\equal{\geometrieDesigne}{box}}{
 		\basicBoxGeometrie{#1}{#2}{#3}{#4}
 	}{}	
-	\ifthenelse{\equal{\geometrieDesigne}{2}}{
+	\ifthenelse{\equal{\geometrieDesigne}{doubleLine}}{
 		\doubleLineGeometrie{#1}{#2}{#3}{#4}
 	}{}
-	\ifthenelse{\equal{\geometrieDesigne}{3}}{
+	\ifthenelse{\equal{\geometrieDesigne}{none}}{
 		% No design geometrie
 	}{}	
 }
@@ -115,10 +116,10 @@
 }
 
 \newcommand{\drawBackground}{
-	\FPeval{\backWidth}{columns * (boxWidth + padding) + padding}
-	\FPeval{\backHeight}{\intcalcDiv{24}{\columns} * (boxHeight + padding) + 2 * padding + headerHeight}
+	\FPeval{\backWidth}{columns * (boxWidth + padding)}
+	\FPeval{\backHeight}{\intcalcDiv{24}{\columns} * (boxHeight + padding) + padding + headerHeight}
 	
-	\fill [colorBackground] (0,0) +(0,-\padding) rectangle (\backWidth ,\backHeight);
+	\fill [colorBackground] (0,0) +(-\padding ,-\padding) rectangle (\backWidth ,\backHeight);
 	
 }
 
